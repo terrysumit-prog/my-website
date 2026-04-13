@@ -1,12 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>My First Website</title>
+  <title>AI Chat Website</title>
 </head>
-<body style="text-align:center; font-family:Arial;">
+<body style="background:#0f172a; color:white; text-align:center; font-family:Arial;">
 
-  <h1>🔥 Welcome to My Website</h1>
-  <p>Yeh meri first earning website hai 💸</p>
+  <h1>🤖 My AI Chat</h1>
+
+  <input type="text" id="userInput" placeholder="Ask something..." style="padding:10px;">
+  <button onclick="reply()">Send</button>
+
+  <p id="output"></p>
+
+  <script>
+    function reply() {
+      let input = document.getElementById("userInput").value.toLowerCase();
+      let output = "";
+
+      if(input.includes("hello")) {
+        output = "Hello 👋 kaise ho?";
+      } 
+      else if(input.includes("money")) {
+        output = "Online earning ke liye reels + affiliate best hai 💸";
+      } 
+      else {
+        output = "Main abhi basic AI hu 😅";
+      }
+
+      document.getElementById("output").innerText = output;
+    }
+  </script>
 
 </body>
 </html>
