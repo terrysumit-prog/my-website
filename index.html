@@ -1,35 +1,416 @@
 <!DOCTYPE html>
-<html>
+<html lang="hi">
 <head>
-  <title>AI Chat Website</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Search Assistant - ChatGPT Style</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            height: 100vh;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .logo i {
+            font-size: 32px;
+            color: white;
+        }
+
+        .logo h1 {
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .chat-container {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(20px);
+        }
+
+        .messages {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        .message {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .user-avatar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .ai-avatar {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+        }
+
+        .content {
+            flex: 1;
+            max-width: 80%;
+        }
+
+        .content p {
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        .user-message .content {
+            text-align: right;
+        }
+
+        .user-message .content p {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 16px 20px;
+            border-radius: 20px 20px 5px 20px;
+            margin-left: auto;
+        }
+
+        .ai-message .content p {
+            background: white;
+            color: #333;
+            padding: 20px 24px;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f0f0f0;
+        }
+
+        .welcome .content p {
+            background: transparent;
+            color: #666;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .input-container {
+            padding: 24px;
+            background: white;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        #userInput {
+            flex: 1;
+            padding: 16px 20px;
+            border: 2px solid #f0f0f0;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        #userInput:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        #sendBtn {
+            width: 56px;
+            height: 56px;
+            border: none;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #sendBtn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .search-options {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .option-btn {
+            padding: 8px 20px;
+            border: 2px solid #f0f0f0;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .option-btn.active,
+        .option-btn:hover {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 24px 40px;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .messages::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .messages::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 10px;
+        }
+
+        .messages::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 12px; }
+            .logo h1 { font-size: 24px; }
+            .messages { padding: 16px; }
+            .message { gap: 12px; }
+            .avatar { width: 40px; height: 40px; font-size: 18px; }
+            .content { max-width: 85%; }
+            .input-container { padding: 16px; }
+        }
+    </style>
 </head>
-<body style="background:#0f172a; color:white; text-align:center; font-family:Arial;">
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-robot"></i>
+                <h1>AI Search</h1>
+            </div>
+        </header>
 
-  <h1>🤖 My AI Chat</h1>
+        <div class="chat-container">
+            <div class="messages" id="messages">
+                <div class="message welcome">
+                    <div class="avatar ai-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="content">
+                        <p>नमस्ते! मैं आपकी मदद के लिए तैयार हूँ। कुछ भी सर्च करें या सवाल पूछें! 🚀</p>
+                    </div>
+                </div>
+            </div>
 
-  <input type="text" id="userInput" placeholder="Ask something..." style="padding:10px;">
-  <button onclick="reply()">Send</button>
+            <div class="input-container">
+                <div class="input-wrapper">
+                    <input type="text" id="userInput" placeholder="यहाँ अपना सवाल लिखें या सर्च करें... (Enter दबाएं)" autocomplete="off">
+                    <button id="sendBtn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                <div class="search-options">
+                    <button class="option-btn active" data-type="search">🔍 Search</button>
+                    <button class="option-btn" data-type="chat">💬 Chat</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-  <p id="output"></p>
+    <div class="loading" id="loading" style="display: none;">
+        <div class="spinner"></div>
+        <span>AI सोच रहा है... ⏳</span>
+    </div>
 
-  <script>
-    function reply() {
-      let input = document.getElementById("userInput").value.toLowerCase();
-      let output = "";
+    <script>
+        class AISearch {
+            constructor() {
+                this.messagesContainer = document.getElementById('messages');
+                this.userInput = document.getElementById('userInput');
+                this.sendBtn = document.getElementById('sendBtn');
+                this.loading = document.getElementById('loading');
+                this.optionBtns = document.querySelectorAll('.option-btn');
+                this.init();
+            }
 
-      if(input.includes("hello")) {
-        output = "Hello 👋 kaise ho?";
-      } 
-      else if(input.includes("money")) {
-        output = "Online earning ke liye reels + affiliate best hai 💸";
-      } 
-      else {
-        output = "Main abhi basic AI hu 😅";
-      }
+            init() {
+                this.sendBtn.addEventListener('click', () => this.sendMessage());
+                this.userInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.sendMessage();
+                });
 
-      document.getElementById("output").innerText = output;
-    }
-  </script>
+                this.optionBtns.forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        this.optionBtns.forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                    });
+                });
 
+                this.userInput.focus();
+            }
+
+            async sendMessage() {
+                const message = this.userInput.value.trim();
+                if (!message) return;
+
+                this.addMessage(message, 'user');
+                this.userInput.value = '';
+                this.showLoading();
+
+                try {
+                    const response = await this.getAIResponse(message);
+                    this.hideLoading();
+                    this.addMessage(response, 'ai');
+                } catch (error) {
+                    this.hideLoading();
+                    this.addMessage('क्षमा करें, कुछ गड़बड़ हो गई। कृपया फिर से कोशिश करें। 😅', 'ai');
+                }
+            }
+
+            addMessage(text, sender) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${sender}-message`;
+
+                const avatar = sender === 'user' ? 'user-avatar' : 'ai-avatar';
+                const icon = sender === 'user' ? 'fa-user' : 'fa-robot';
+                
+                messageDiv.innerHTML = `
+                    <div class="avatar ${avatar}">
+                        <i class="fas ${icon}"></i>
+                    </div>
+                    <div class="content">
+                        <p>${this.formatMessage(text)}</p>
+                    </div>
+                `;
+
+                this.messagesContainer.appendChild(messageDiv);
+                this.scrollToBottom();
+            }
+
+            formatMessage(text) {
+                return text
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/`(.*?)`/g, '<code>$1</code>')
+                    .replace(/\n/g, '<br>');
+            }
+
+            async getAIResponse(message) {
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        const responses = {
+                            search: [
+                                `🔍 **"${message}" के लिए सर्वश्रेष्ठ परिणाम:**\n\n✅ **मुख्य जानकारी:**\n• पहला महत्वपूर्ण तथ्य\n• दूसरा महत्वपूर्ण तथ्य\n• तीसरा महत्वपूर्ण तथ्य\n\n📊 **विश्लेषण:** यह जानकारी नवीनतम डेटा पर आधारित है\n\n🔗 **स्रोत:** विश्वसनीय वेबसाइट्स`,
+                                `🎯 **तुरंत परिणाम:**\n\n**टॉप 3 पॉइंट्स:**\n1. सबसे महत्वपूर्ण\n2. दूसरा जरूरी\n3. तीसरा उपयोगी\n\n⏰ **अपडेट:** अभी के समय के अनुसार`
+                            ],
+                            chat: [
+                                `बहुत अच्छा सवाल! ${message.includes('कैसे') ? '👨‍💻' : '🤔'}\n\n**विस्तृत जवाब:**\n\n1️⃣ **समझ:** आपका प्रश्न समझ गया\n2️⃣ **समाधान:** यहाँ step-by-step तरीका\n3️⃣ **टिप्स:** अतिरिक्त सलाह\n\nक्या और स्पष्ट करना है?`,
+                                `मैंने analyze किया! ${message}\n\n**सारांश:**\n✅ सही दिशा\n⚠️ ध्यान देने योग्य\n💡 बेहतर तरीका\n\nTry करेंगे? 🚀`
+                            ]
+                        };
+
+                        const activeType = document.querySelector('.option-btn.active').dataset.type;
+                        const response = responses[activeType][Math.floor(Math.random() * responses[activeType].length)];
+                        resolve(response);
+                    }, 1500 + Math.random() * 2000);
+                });
+            }
+
+            showLoading() { this.loading.style.display = 'flex'; }
+            hideLoading() { this.loading.style.display = 'none'; }
+            scrollToBottom() { 
+                this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight; 
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new AISearch();
+        });
+    </script>
 </body>
 </html>
