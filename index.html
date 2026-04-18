@@ -3,136 +3,254 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Timer Website</title>
+<title>POP POP</title></title>
 
 <style>
 body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    background: #0f172a;
-    color: white;
-    margin: 0;
+  font-family: Arial;
+  margin: 0;
+  background: #f5f5f5;
 }
 
-nav {
-    background: #1e293b;
-    padding: 15px;
+header {
+  background: black;
+  color: white;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
 }
 
-nav a {
-    color: white;
-    margin: 10px;
-    text-decoration: none;
-    font-weight: bold;
+.products {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+  gap: 20px;
+  padding: 20px;
 }
 
-.container {
-    margin-top: 80px;
+.product {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
 }
 
 button {
-    padding: 12px 25px;
-    margin: 10px;
-    font-size: 18px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
+  background: green;
+  color: white;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
 }
 
-.start { background: green; color: white; }
-.stop { background: orange; color: white; }
-.reset { background: red; color: white; }
-
-#timer {
-    font-size: 40px;
-    margin: 20px;
+.cart {
+  padding: 20px;
+  background: white;
+  margin: 20px;
 }
 </style>
-
 </head>
+
 <body>
 
-<nav>
-    <a href="#" onclick="showPage('home')">Home</a>
-    <a href="#" onclick="showPage('timer')">Timer</a>
-    <a href="#" onclick="showPage('about')">About</a>
-</nav>
+<header>
+  <h2>My Online Store</h2>
+  <h3>Cart: <span id="cart-count">0</span></h3>
+</header>
 
-<!-- HOME PAGE -->
-<div id="home" class="container">
-    <h1>Welcome</h1>
-    <button class="start" onclick="showPage('timer')">Start Timer</button>
-</div>
+<div class="products" id="product-list"></div>
 
-<!-- TIMER PAGE -->
-<div id="timerPage" class="container" style="display:none;">
-    <h1>Timer</h1>
-    <div id="timer">00:00:00</div>
-
-    <button class="start" onclick="startTimer()">Start</button>
-    <button class="stop" onclick="stopTimer()">Stop</button>
-    <button class="reset" onclick="resetTimer()">Reset</button>
-</div>
-
-<!-- ABOUT PAGE -->
-<div id="about" class="container" style="display:none;">
-    <h1>About</h1>
-    <p>This is a simple timer website created using HTML, CSS, and JavaScript.</p>
+<div class="cart">
+  <h2>Your Cart</h2>
+  <ul id="cart-items"></ul>
+  <button onclick="checkout()">Checkout</button>
 </div>
 
 <script>
-let seconds = 0;
-let timer;
-let running = false;
+let products = [
+  {id:1, name:"T-Shirt", price:499},
+  {id:2, name:"Shoes", price:999},
+  {id:3, name:"Watch", price:1499},
+  {id:4, name:"Cap", price:299}
+];
 
-function updateDisplay() {
-    let hrs = Math.floor(seconds / 3600);
-    let mins = Math.floor((seconds % 3600) / 60);
-    let secs = seconds % 60;
+let cart = [];
 
-    document.getElementById("timer").innerText =
-        String(hrs).padStart(2, '0') + ":" +
-        String(mins).padStart(2, '0') + ":" +
-        String(secs).padStart(2, '0');
+function loadProducts() {
+  let container = document.getElementById("product-list");
+
+  products.forEach(p => {
+    container.innerHTML += `
+      <div class="product">
+        <h3>${p.name}</h3>
+        <p>₹${p.price}</p>
+        <button onclick="addToCart(${p.id})">Add to Cart</button>
+      </div>
+    `;
+  });
 }
 
-function startTimer() {
-    if (!running) {
-        running = true;
-        timer = setInterval(() => {
-            seconds++;
-            updateDisplay();
-        }, 1000);
-    }
+function addToCart(id) {
+  let product = products.find(p => p.id === id);
+  cart.push(product);
+  document.getElementById("cart-count").innerText = cart.length;
+  displayCart();
 }
 
-function stopTimer() {
-    running = false;
-    clearInterval(timer);
+function displayCart() {
+  let list = document.getElementById("cart-items");
+  list.innerHTML = "";
+
+  cart.forEach(item => {
+    list.innerHTML += `<li>${item.name} - ₹${item.price}</li>`;
+  });
 }
 
-function resetTimer() {
-    running = false;
-    clearInterval(timer);
-    seconds = 0;
-    updateDisplay();
+function checkout() {
+  alert("Order placed successfully ✅ (Demo)");
 }
 
-function showPage(page) {
-    document.getElementById("home").style.display = "none";
-    document.getElementById("timerPage").style.display = "none";
-    document.getElementById("about").style.display = "none";
-
-    if (page === "home") {
-        document.getElementById("home").style.display = "block";
-    } else if (page === "timer") {
-        document.getElementById("timerPage").style.display = "block";
-    } else {
-        document.getElementById("about").style.display = "block";
-    }
-}
+loadProducts();
 </script>
 
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Pro Store</title>
+
+<style>
+body {
+  font-family: Arial;
+  margin: 0;
+  background: #f1f3f6;
+}
+
+header {
+  background: #2874f0;
+  color: white;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.products {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.product {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+button {
+  background: #fb641b;
+  color: white;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.cart, .orders {
+  background: white;
+  margin: 20px;
+  padding: 20px;
+  border-radius: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h2>My Pro Store</h2>
+  <h3>Cart: <span id="cart-count">0</span></h3>
+</header>
+
+<div class="products" id="product-list"></div>
+
+<div class="cart">
+  <h2>Your Cart</h2>
+  <ul id="cart-items"></ul>
+  <button onclick="checkout()">Checkout</button>
+</div>
+
+<div class="orders">
+  <h2>Your Orders</h2>
+  <ul id="order-list"></ul>
+</div>
+
+<script>
+let products = [
+  {id:1, name:"T-Shirt", price:499},
+  {id:2, name:"Shoes", price:999},
+  {id:3, name:"Watch", price:1499},
+  {id:4, name:"Cap", price:299}
+];
+
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+let orders = JSON.parse(localStorage.getItem("orders")) || [];
+
+function loadProducts() {
+  let container = document.getElementById("product-list");
+
+  products.forEach(p => {
+    container.innerHTML += `
+      <div class="product">
+        <h3>${p.name}</h3>
+        <p>₹${p.price}</p>
+        <button onclick="addToCart(${p.id})">Add to Cart</button>
+      </div>
+    `;
+  });
+}
+
+function addToCart(id) {
+  let product = products.find(p => p.id === id);
+  cart.push(product);
+  localStorage.setItem("cart", JSON.stringify(cart));
+  updateCart();
+}
+
+function updateCart() {
+  document.getElementById("cart-count").innerText = cart.length;
+
+  let list = document.getElementById("cart-items");
+  list.innerHTML = "";
+
+  cart.forEach(item => {
+    list.innerHTML += `<li>${item.name} - ₹${item.price}</li>`;
+  });
+}
+
+function checkout() {
+  if(cart.length === 0){
+    alert("Cart empty ❌");
+    return;
+  }
+
+  orders.push([...cart]);
+  localStorage.setItem("orders", JSON.stringify(orders));
+
+  cart = [];
+  localStorage.setItem("cart", JSON.stringify(cart));
+
+  alert("Order Placed Successfully ✅");
+  updateCart();
+  loadOrders();
+}
+
+function loadOrders() {
+  let list = document.getElementById("order-list");
+  list.innerHTML = "";
+
+  orders.forEach((order, index) => {
+    let items = order.map(i => i.name).join(", ");
+    list.innerHTML += `<li>Order ${index+1}: ${items
